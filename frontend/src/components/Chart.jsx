@@ -2,8 +2,7 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -12,14 +11,13 @@ import {
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
 );
 
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
 export default function Chart({ scores }) {
   const data = {
@@ -28,12 +26,26 @@ export default function Chart({ scores }) {
       {
         label: "Performance",
         data: scores,
-        borderColor: "#3b82f6",
-        backgroundColor: "rgba(59,130,246,0.2)",
-        tension: 0.4
+        backgroundColor: "#3b82f6",
+        borderRadius: 8,
+        barThickness: 30
       },
     ],
   };
 
-  return <Line data={data} />;
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  };
+
+  return <Bar data={data} options={options} />;
 }

@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Chart from "../components/Chart";
 import { useNavigate } from "react-router-dom";
+
 const Dashboard = () => {
-
-
-  
-const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const [scores, setScores] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/leaderboard")
+    axios
+      .get("http://localhost:3000/api/leaderboard", {
+        withCredentials: true
+      })
       .then(res => setScores(res.data.map(s => s.score)))
-      .catch(() => setScores([10,20,30,25,40])); 
+      .catch(() => setScores([10, 20, 30, 25, 40]));
   }, []);
 
   return (
@@ -37,7 +37,7 @@ const navigate = useNavigate();
           <div className="bg-white rounded-xl shadow p-4">
             <p className="text-gray-500 text-sm">Total Score</p>
             <h2 className="text-2xl font-bold text-blue-600">
-              {scores.reduce((a,b)=>a+b,0)}
+              {scores.length ? scores.reduce((a,b)=>a+b,0) : 0}
             </h2>
           </div>
 
@@ -51,7 +51,7 @@ const navigate = useNavigate();
           <div className="bg-white rounded-xl shadow p-4">
             <p className="text-gray-500 text-sm">Leaderboard Rank</p>
             <h2 className="text-2xl font-bold text-blue-600">
-              #3
+              #{scores.length ? 3 : "-"}
             </h2>
           </div>
 
@@ -77,41 +77,41 @@ const navigate = useNavigate();
               Quick Actions
             </h2>
 
-      <div className="space-y-3 flex-1">
+            <div className="space-y-3 flex-1">
 
-  <button
-    onClick={() => navigate("/quiz")}
-    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 rounded-lg 
-    shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
-    transition-all duration-200">
-    Start Quiz
-  </button>
+              <button
+                onClick={() => navigate("/quiz")}
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2.5 rounded-lg 
+                shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
+                transition-all duration-200">
+                Start Quiz
+              </button>
 
-  <button
-    onClick={() => navigate("/ai")}
-    className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white py-2.5 rounded-lg 
-    shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
-    transition-all duration-200">
-    AI Doubt Solver
-  </button>
+              <button
+                onClick={() => navigate("/ai")}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white py-2.5 rounded-lg 
+                shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
+                transition-all duration-200">
+                AI Doubt Solver
+              </button>
 
-  <button
-    onClick={() => navigate("/planner")}
-    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2.5 rounded-lg 
-    shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
-    transition-all duration-200">
-    Study Planner
-  </button>
+              <button
+                onClick={() => navigate("/planner")}
+                className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2.5 rounded-lg 
+                shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
+                transition-all duration-200">
+                Study Planner
+              </button>
 
-  <button
-    onClick={() => navigate("/leaderboard")}
-    className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-2.5 rounded-lg 
-    shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
-    transition-all duration-200">
-    Leaderboard
-  </button>
+              <button
+                onClick={() => navigate("/leaderboard")}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white py-2.5 rounded-lg 
+                shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 
+                transition-all duration-200">
+                Leaderboard
+              </button>
 
-</div>
+            </div>
           </div>
 
         </div>

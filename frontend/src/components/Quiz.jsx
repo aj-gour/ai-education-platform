@@ -1,24 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+const token = localStorage.getItem("token");
 const Quiz = () => {
   const navigate = useNavigate();
 
-  const questions = [
-    {
-      question: "What is React?",
-      options: ["Library", "Language", "Framework", "Database"],
-      answer: "Library",
-    },
-    {
-      question: "What is Node.js?",
-      options: ["Runtime", "Database", "Browser", "Library"],
-      answer: "Runtime",
-    },
-  ];
-
+  const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    axios
+      .get(
+        "http://localhost:3000/api/quiz/quiz",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setQuestions(res.data?.questions || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSelect = (option) => {
     setAnswers({
@@ -27,63 +39,77 @@ const Quiz = () => {
     });
   };
 
-  const nextQuestion = () => {
-    setCurrent(current + 1);
-  };
+  const nextQuestion = () => setCurrent(current + 1);
+  const prevQuestion = () => setCurrent(current - 1);
 
-  const prevQuestion = () => {
-    setCurrent(current - 1);
-  };
-
-  const submitQuiz = () => {
-    // score calculate
+  const submitQuiz = async () => {
     let score = 0;
+
     questions.forEach((q, i) => {
-      if (answers[i] === q.answer) {
-        score++;
-      }
+      if (answers[i] === q.answer) score++;
     });
 
-    console.log("Score:", score);
+    await axios.post(
+      "http://localhost:3000/api/quiz/submit",
+      { score },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    // redirect to dashboard
     navigate("/dashboard");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading Quiz...
+      </div>
+    );
+  }
+
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        No Questions Found
+      </div>
+    );
+  }
 
   const progress = ((current + 1) / questions.length) * 100;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-2xl p-6 rounded-xl shadow-lg">
+      <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-xl">
 
-        {/* Progress */}
+        <h1 className="text-xl font-semibold mb-4">
+          Quiz Challenge
+        </h1>
+
         <div className="mb-4">
-          <div className="w-full bg-gray-200 h-2 rounded-full">
+          <div className="w-full bg-gray-200 h-2 rounded">
             <div
-              className="bg-blue-500 h-2 rounded-full"
+              className="bg-blue-500 h-2 rounded"
               style={{ width: `${progress}%` }}
-            ></div>
+            />
           </div>
-          <p className="text-sm mt-1 text-gray-500">
-            Question {current + 1} of {questions.length}
-          </p>
         </div>
 
-        {/* Question */}
-        <h2 className="text-xl font-semibold mb-6">
+        <h2 className="text-lg font-semibold mb-4">
           {questions[current].question}
         </h2>
 
-        {/* Options */}
         <div className="space-y-3">
           {questions[current].options.map((option, i) => (
             <button
               key={i}
               onClick={() => handleSelect(option)}
-              className={`w-full text-left p-3 rounded-lg border ${
+              className={`w-full p-3 rounded border ${
                 answers[current] === option
                   ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-100"
+                  : "bg-white"
               }`}
             >
               {option}
@@ -91,13 +117,11 @@ const Quiz = () => {
           ))}
         </div>
 
-        {/* Buttons */}
         <div className="mt-6 flex justify-between">
-
           <button
             onClick={prevQuestion}
             disabled={current === 0}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 rounded"
           >
             Previous
           </button>
@@ -105,20 +129,18 @@ const Quiz = () => {
           {current === questions.length - 1 ? (
             <button
               onClick={submitQuiz}
-              className="bg-green-500 text-white px-6 py-2 rounded-lg"
+              className="px-4 py-2 bg-green-500 text-white rounded"
             >
               Submit
             </button>
           ) : (
             <button
               onClick={nextQuestion}
-              disabled={!answers[current]}
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               Next
             </button>
           )}
-
         </div>
 
       </div>

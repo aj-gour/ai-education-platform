@@ -9,7 +9,6 @@ import Chart from "./components/Chart";
 import Chat from "./components/Chat";
 import Leaderboard from "./components/Leaderboard";
 import Quiz from "./components/Quiz";
-import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 
 const App = () => {
@@ -25,7 +24,6 @@ const App = () => {
           <Route path="/chat" element={<Chat />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/quiz" element={<Quiz />} />
-          <Route path="/sidebar" element={<Sidebar />} />
           <Route path="/navbar" element={<Navbar />} />
         </Routes> 
       </div>
